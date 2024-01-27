@@ -1,0 +1,295 @@
+ 
+var rectMarcado = document.createElementNS(svgNS,'rect'); 
+var sAltoRectMarcado;
+var sLargoRectMarcado;
+var objSel;
+var objSeleccionado3D;
+var bBox ;
+var selectedElement = false;
+
+let pos3Dcomienzo;
+function seleccionarObjetos(evt){  
+    function select(evt) {      
+    var tar = evt.target;
+    tar.addEventListener('click', seleccionarObj);
+        function seleccionarObj(evt) {    
+            if (evt.target.classList.contains('draggable')) {
+                selectedElement = evt.target;
+                let xx= selectedElement.getAttributeNS(null, 'id');
+                let idObjSeleccionado3D= xx.split(".")[0];
+                objSel = document.getElementById(idObjSeleccionado3D);
+                objSeleccionado3D = listaObjs[idObjSeleccionado3D];
+                bBox = objSel.getBBox();
+                rectMarcado.setAttributeNS(null,'x', bBox.x);
+                rectMarcado.setAttributeNS(null,'y', bBox.y);
+                rectMarcado.setAttributeNS(null,'width', bBox.width);
+                rectMarcado.setAttributeNS(null,'height', bBox.height);
+                sLargoRectMarcado = bBox.width/2;
+                sAltoRectMarcado = bBox.height/2;
+                rectMarcado.setAttributeNS(null,  'fill' ,'none');
+                rectMarcado.setAttributeNS(null,  'stroke' ,'red');
+                svg.appendChild(rectMarcado);
+                document.getElementById("nameObj").innerText = "OBJETO: " + idObjSeleccionado3D;
+                pos3D = [objSeleccionado3D.coord.pos[0], objSeleccionado3D.coord.pos[1], objSeleccionado3D.coord.pos[2]];           
+                pos3Dcomienzo =  pos3D ;
+                document.getElementById("translateXobj").value= pos3D[0];
+                document.getElementById("translateYobj").value= pos3D[1];
+                document.getElementById("translateZobj").value= pos3D[2];            
+            } else{
+              rectMarcado.setAttributeNS(null,  'stroke' ,'none');
+              document.getElementById("translateXobj").value= "0.0";
+              document.getElementById("translateYobj").value= "0.0";
+              document.getElementById("translateZobj").value= "0.0";       
+              document.getElementById("nameObj").innerText = "OBJETO: ";
+              objSel = null;
+              objSeleccionado3D = null;
+            } 
+          } 
+          document.getElementById("translateXobj").value;
+        }
+     select(evt);   
+}
+function posX(pos3Da,pos3Db,pos3Dc){
+    objSeleccionado3D.coord.pos[0] = pos3Da;
+    pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+    objSel.setAttributeNS(null, 'cx',  pos2D[0]);
+    objSel.setAttributeNS(null, 'cy',  pos2D[1]);
+    rectMarcado.setAttributeNS(null,'x', pos2D[0] - sLargoRectMarcado);
+    rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+  function posY(pos3Da,pos3Db,pos3Dc){
+    objSeleccionado3D.coord.pos[1] = pos3Db;
+    pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+    objSel.setAttributeNS(null, 'cx',  pos2D[0]);
+    objSel.setAttributeNS(null, 'cy', pos2D[1]);
+    rectMarcado.setAttributeNS(null,'x',  pos2D[0] - sLargoRectMarcado);
+    rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+  function posZ(pos3Da,pos3Db,pos3Dc){
+    objSeleccionado3D.coord.pos[2] = pos3Dc;
+    pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+    objSel.setAttributeNS(null, 'cx', pos2D[0]);
+    objSel.setAttributeNS(null, 'cy', pos2D[1]);
+    rectMarcado.setAttributeNS(null,'x', pos2D[0] - sLargoRectMarcado);
+    rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+var pos2D =[];
+
+function moverObjetosInput(){          
+      function posXconInput(){
+          if(objSeleccionado3D != null){
+            switch (objSeleccionado3D.typeObj) {
+              case "dot":
+                let nombre = objsImported[j].getAttributeNS(null, 'id');
+                let posiciones =  listaObjsArr[j].coord.pos;
+                let x = posiciones[0] ;          
+                let y = posiciones[1] ;            
+                let z = posiciones[2];
+                let x3D = (x*cosX-y*senX) + centro;        
+                let y3D = (x*senX+y*cosX)*senY - z*cosY + centro ;      
+                let z3D = z*cosY;
+                objsImported[j].setAttributeNS(null, 'cx', x3D);  
+                objsImported[j].setAttributeNS(null, 'cy', y3D); 
+              break;  
+              case "plane":
+                let arrayPoints = listaObjsArr[j].geom; 
+                let point2D ;   
+                let pointString = "";
+                for (let value of arrayPoints) {
+                    point2D = calculoParam(value[0],value[1],value[2]);
+                    pointString += point2D[0]+ "," +  point2D[1] + " ";
+                }
+                objsImported[j].setAttribute("points",pointString);
+              break;
+              case "poly":       
+                  let facesPoly = listaObjsArr[j].geom;
+                  let face;
+                  for (let j=0; j< facesPoly.length; j++) {
+                      face = document.createElementNS(svgNS, "polygon");
+                      face.setAttributeNS(null, 'id', (idObj + "000" + j));
+                      let point2Dpoly;
+                      let pointFace;
+                      for (let point of faces[j]){
+                          pointFace = svg.createSVGPoint();
+                          point2Dpoly= calculoParam(point[0],point[1],point[2]);                  
+                          pointFace.x = point2Dpoly[0];
+                          pointFace.y =point2Dpoly[1];
+                          face.points.appendItem(pointFace);
+                      }
+                      face.setAttributeNS(null, 'fill', fillObj); 
+                      face.setAttributeNS(null, 'stroke',stroke);
+                      face.classList.add("draggable");
+                      svg.appendChild(face);
+                  } 
+                break;     
+              default:
+              break;
+
+            pos3D[0]=document.getElementById("translateXobj").value; 
+            posX(pos3D[0],pos3D[1],pos3D[2]);
+          }
+      }
+      function posYconInput(){        
+          if(objSeleccionado3D != null){
+            pos3D[1] = document.getElementById("translateYobj").value;
+            posY(pos3D[0],pos3D[1],pos3D[2]);
+          }         
+      }
+      function posZconInput(){         
+          if(objSeleccionado3D != null){
+            pos3D[2] = document.getElementById("translateZobj").value;
+            posZ(pos3D[0],pos3D[1],pos3D[2]);
+          } 
+      } 
+    document.getElementById("translateXobj").addEventListener('change' ,posXconInput);
+    document.getElementById("translateYobj").addEventListener('change' ,posYconInput);
+    document.getElementById("translateZobj").addEventListener('change' ,posZconInput);
+  }
+}
+function calculo3DRot(vertice, rot){
+    let anguloXrad = rot[0]/57.29578;
+    let anguloYrad = rot[1]/57.29578;
+    let cosX = Math.cos(rot[0]);  
+    let senX = Math.sin(rot[0]);  
+    let cosY = Math.cos(rot[1]);  
+    let senY = Math.sin(rot[1]); 
+    let cosZ = Math.cos(rot[2]);  
+    let senZ = Math.sin(rot[2]);        
+    let x3Da = (vertice[0]*cosZ-vertice[1]*senZ);        
+    let y3Da = (vertice[1]*senZ+vertice[1]*cosZ) ;      
+    let z3Da = vertice[2];
+    let x3Db = x3Da;        
+    let y3Db = (y3Da*cosX - z3Da*senX) ;      
+    let z3Db = (y3Da*senX -z3Da*cosX);
+  return [x3Db, y3Db, z3Db];
+ }
+
+function rotarObjetosInput(){          
+    function rotXInput(){
+        if(objSeleccionado3D != null){
+          switch (objSeleccionado3D.typeObj) {
+            case "dot":             
+            break;  
+            case "plane":
+              let arrayPoints = listaObjsArr[j].geom; 
+              calculo3DRot(vertice, rot)
+              let point2D ;   
+              let pointString = "";
+              for (let value of arrayPoints) {
+                  point2D = calculoParam(value[0],value[1],value[2]);
+                  pointString += point2D[0]+ "," +  point2D[1] + " ";
+              }
+              objsImported[j].setAttribute("points",pointString);
+            break;
+            case "poly":       
+                let facesPoly = listaObjsArr[j].geom;
+             
+              break;     
+            default:
+            break;
+          }
+          pos3D[0]=document.getElementById("translateXobj").value; 
+          posX(pos3D[0],pos3D[1],pos3D[2]);
+        }
+    }
+    function rotYInput(){        
+        if(objSeleccionado3D != null){
+          pos3D[1] = document.getElementById("translateYobj").value;
+          posY(pos3D[0],pos3D[1],pos3D[2]);
+        }         
+    }
+    function posZconInput(){         
+        if(objSeleccionado3D != null){
+          pos3D[2] = document.getElementById("translateZobj").value;
+          posZ(pos3D[0],pos3D[1],pos3D[2]);
+        } 
+    } 
+  document.getElementById("rotateXobj").addEventListener('change' ,posXconInput);
+  document.getElementById("rotateYobj").addEventListener('change' ,posYconInput);
+  document.getElementById("rotateZobj").addEventListener('change' ,posZconInput);
+}
+
+/*     
+function pintaObjeto(objetoPinta, j){
+    switch (objetoPinta.typeObj) {
+      case "dot":
+        let posiciones =  objetoPinta.coord.pos;
+        let x = posiciones[0] ;          
+        let y = posiciones[1] ;            
+        let z = posiciones[2];
+        let x3D = (x*cosX-y*senX) + centro;        
+        let y3D = (x*senX+y*cosX)*senY - z*cosY + centro ;      
+        let z3D = z*cosY;
+        objsImported[j].setAttributeNS(null, 'cx', x3D);  
+        objsImported[j].setAttributeNS(null, 'cy', y3D); 
+      break;  
+      case "plane":
+        let arrayPoints = objetoPinta.geom; 
+        let pivotPos = objetoPinta.coord.pos;
+        let pivotGiro = objetoPinta.coord.rot;
+        let pivotScale = objetoPinta.coord.sacle;
+        let point2D ;   
+        let pointString = "";
+        for (let value of arrayPoints) {
+            point2D = calculoParam(value[0],value[1],value[2]);
+            pointString += point2D[0]+ "," +  point2D[1] + " ";
+        }
+        objsImported[j].setAttribute("points",pointString);
+      break;
+      case "poly":       
+          let facesPoly = listaObjsArr[j].geom;
+          let face;
+          for (let j=0; j< facesPoly.length; j++) {
+              face = document.createElementNS(svgNS, "polygon");
+              face.setAttributeNS(null, 'id', (idObj + "000" + j));
+              let point2Dpoly;
+              let pointFace;
+              for (let point of faces[j]){
+                  pointFace = svg.createSVGPoint();
+                  point2Dpoly= calculoParam(point[0],point[1],point[2]);                  
+                  pointFace.x = point2Dpoly[0];
+                  pointFace.y =point2Dpoly[1];
+                  face.points.appendItem(pointFace);
+              }
+              face.setAttributeNS(null, 'fill', fillObj); 
+              face.setAttributeNS(null, 'stroke',stroke);
+              face.classList.add("draggable");
+              svg.appendChild(face);
+          } 
+        break;     
+      default:
+      break;
+    } 
+  
+  }
+  */
+ /*
+  function posX(pos3Da,pos3Db,pos3Dc){
+      objSeleccionado3D.coord.pos[0] = pos3Da;
+      pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+      objSel.setAttributeNS(null, 'cx',  pos2D[0]);
+      objSel.setAttributeNS(null, 'cy',  pos2D[1]);
+      rectMarcado.setAttributeNS(null,'x', pos2D[0] - sLargoRectMarcado);
+      rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+
+  function posY(pos3Da,pos3Db,pos3Dc){
+      objSeleccionado3D.coord.pos[1] = pos3Db;
+      pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+      objSel.setAttributeNS(null, 'cx',  pos2D[0]);
+      objSel.setAttributeNS(null, 'cy', pos2D[1]);
+      rectMarcado.setAttributeNS(null,'x',  pos2D[0] - sLargoRectMarcado);
+      rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+
+    function posZ(pos3Da,pos3Db,pos3Dc){
+      objSeleccionado3D.coord.pos[2] = pos3Dc;
+      pos2D = calculoParam(pos3Da,pos3Db,pos3Dc);            
+      objSel.setAttributeNS(null, 'cx', pos2D[0]);
+      objSel.setAttributeNS(null, 'cy', pos2D[1]);
+      rectMarcado.setAttributeNS(null,'x', pos2D[0] - sLargoRectMarcado);
+      rectMarcado.setAttributeNS(null,'y', pos2D[1] - sAltoRectMarcado);    
+  }
+  */
+
+  

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MovEspacio</title>        
+        <style>
+            body{
+                font-family: Montserrat;
+            }
+            .static {
+                cursor: not-allowed;
+            }
+            .draggable {
+                cursor: move;
+            }
+            .container {
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: row;
+            }
+            .barraMedidas {
+                width: 200px;
+                height: 800px;
+                margin-left: 8px;
+                border-right:  1px solid #666;;
+            }
+            .titulo{
+                width:180px;
+                height: 100%;
+                padding-top: 2px;
+                padding-bottom: 6px;
+                margin-bottom:24px;
+                color:#666;
+                border-bottom: 1px solid #666;
+            }
+            h4{
+                margin-bottom: -6px;
+            }
+            .grupoValor{
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: row;
+                margin-top: 8px;
+            }
+            label{
+                width:100px;
+                color: #888;
+                font-size:14px;
+            }
+            input{
+                width:80px;
+            }
+
+        </style>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet"> 
+    </head>    
+    <body >       
+        <div class="container">     
+            <svg version="1.1" baseProfile="full" id="svg" width="800" height="800" oncontextmenu="return false;" >
+                <rect width="100%" height="100%" fill="#fff" stroke="#f888"/>             
+                <text x="730" y="12" font-family="Verdana" font-size="10" id="anguloY">0º </text>           
+            </svg> 
+            <div class ="barraMedidas">
+                <div class="subBarra">
+                    <div class= "titulo"> <h4>Cámara</h4></div>
+                    <div class="grupoValor">
+                        <label> Rotate X: </label>
+                        <input type="number" step="any" id= "rotateX" value=0.0 >
+                    </div>
+                    <div class="grupoValor">
+                        <label> Rotate Y: </label>
+                        <input type="number" step="any" id= "rotateY" value=0.0>
+                    </div>
+                    <div class="grupoValor">
+                        <label> Translate X: </label>
+                        <input type="number" step="any" id= "transX" value=0.0 >
+                    </div>
+                    <div class="grupoValor">
+                        <label> Translate Y: </label>
+                        <input type="number" step="any" id= "transY" value=0.0>
+                    </div>
+                </div>
+                <div class="subBarra">
+                    <div class= "titulo"> <h4 id="nameObj">Objeto</h4></div>
+                    <div class="grupoValor">
+                        <label> Translate X: </label>
+                        <input type="number" id= "translateXobj" value=0.0>
+                    </div>
+                    <div class="grupoValor">
+                        <label> Translate Y: </label>
+                        <input type="number" id= "translateYobj" value=0.0>
+                    </div>
+                    <div class="grupoValor">
+                        <label> Translate Z: </label>
+                        <input type="number" id= "translateZobj" value=0.0>
+                    </div>
+                </div>
+                <div class="subBarra">
+                    <div class="sepMenor" style="border-bottom: 1 solid #888;padding-top: 12px;">
+                    </div>
+                    <div class="grupoValor">
+                        <label> Rotate X: </label>
+                        <input type="number" id= "rotateXobj" value=0.0>
+                    </div>
+                    <div class="grupoValor">
+                        <label> Rotate Y: </label>
+                        <input type="number" id= "rotateYobj" value=0.0>
+                    </div>
+                    <div class="grupoValor">
+                        <label> Rotate Z: </label>
+                        <input type="number" id= "rotateZobj" value=0.0>
+                    </div>
+                </div>
+            </div>
+        </div>   
+      
+          <script  src="MovEspacio.js" ></script>  
+        <!-- <script  src="objetos.js" type="module"></script>   -->
+        
+    </body>
+</html>
