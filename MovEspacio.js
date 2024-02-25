@@ -36,8 +36,7 @@ var anchoTotal=800;
 var centro=400;
 
 /* ------ CREAR CUADRICULA ------ */
-function crearCuadricula (n){    
-  console.log("WWWWWW")
+function crearCuadricula (n){  
     svgX = svg.getBoundingClientRect().left;
     svgY = svg.getBoundingClientRect().top;   
     numeroLineas = n;    
