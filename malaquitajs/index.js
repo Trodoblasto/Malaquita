@@ -67,9 +67,24 @@ function posFromInput(){
  moverEspacio(posX, posY)
 }
 
-function girarEspacio(evt) {
-  //Función importada del Móduli 'girarEspacio.js'
-  let arrayGiros = giro(evt, svg)
+function endDrag(evt) {       
+  svg.removeEventListener('mousemove', drag);
+  svg.removeEventListener('mouseup', endDrag);
+  svg.removeEventListener('mouseleave', endDrag);      
+} 
+
+function girarEspacio(evt) {  
+  
+    let evento = evt || window.event;
+    console.log("@@@@@@@ evento: "+ JSON.stringify(evento.button))
+      if( evento.button == 2){
+        let arrayGiros = giro(evt, svg)
+        console.log("........: " + JSON.stringify(arrayGiros))
+          //Función importada del Módulo 'girarEspacio.js'  
+       
+    }  
+
+   
 
   let anguloX= document.getElementById("rotateX").value;
   let anguloY= document.getElementById("rotateY").value; 
@@ -85,6 +100,6 @@ window.onload = function() {
  document.getElementById("rotateY").onchange=anguloFromInput;  
  document.getElementById("transX").onchange=posFromInput;
  document.getElementById("transY").onchange=posFromInput;  
- 
- document.documentElement.onmousemove = girarEspacio;
+ //console.log("Check Fecha 2024/marzo/04")
+ document.documentElement.onmousedown = girarEspacio;
 }
