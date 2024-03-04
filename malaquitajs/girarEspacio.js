@@ -14,15 +14,7 @@ export default function giro(evt, svg) {
 
     let inicioDragX = 0;
     let inicioDragY =0;      
-    let evento = evt || window.event;
-    let pulsado = evento.button;
-    if(pulsado ==2){
-        inicioDragX = evt.clientX -svgX;
-        inicioDragY = evt.clientY-svgY;       
-        svg.addEventListener('mousemove', drag);
-        svg.addEventListener('mouseup', endDrag);
-        svg.addEventListener('mouseleave', endDrag);        
-    }  
+    let evento = evt || window.event;    
 
     function drag(evt) {  
             let dragX = evt.clientX-inicioDragX-svgX;
@@ -42,16 +34,13 @@ export default function giro(evt, svg) {
             cosX = Math.cos(anguloXrad);  
             senX = Math.sin(anguloXrad);  
             cosY = Math.cos(anguloYrad);  
-            senY = Math.sin(anguloYrad);  
+            senY = Math.sin(anguloYrad);
+            console.log(">>>>>: " + JSON.stringify([cosX, senX , cosY, senY]  ))
             return [cosX, senX , cosY, senY]            
         }
 
-    function endDrag(evt) {       
-        svg.removeEventListener('mousemove', drag);
-        svg.removeEventListener('mouseup', endDrag);
-        svg.removeEventListener('mouseleave', endDrag);      
-    } 
     return drag(evt)
   }
   
+   
    
